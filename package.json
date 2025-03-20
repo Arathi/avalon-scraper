@@ -1,0 +1,9 @@
+{
+  "name": "@avalon-scraper/monorepo",
+  "version": "0.25.320-dev",
+  "author": "Arathi of Nebnizilla",
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4"
+  }
+}
