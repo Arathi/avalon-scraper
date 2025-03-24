@@ -2,17 +2,20 @@ import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, relative, sep } from "node:path";
 
-import { unzipSync } from "fflate";
 import * as CRC32 from "crc-32";
 import dayjs from "dayjs";
+
+import {
+  type Game as GameListItem,
+  GameList,
+  ROM,
+} from "@avalon-scraper/emulationstation";
 
 import {
   type ScreenScraperClient,
   ScreenScraperAxiosClient,
   type Game as GameInfo,
 } from "@avalon-scraper/screenscraper";
-
-import type { Game as GameListItem } from "./domains/game";
 
 type ScraperOptions = {
   username?: string;
@@ -36,21 +39,20 @@ export class Scraper {
     this.languages = languages;
   }
 
-  async getCRC(path: string): Promise<string> {
-    const buffer = await readFile(path);
-    let bytes = new Uint8Array(buffer.buffer);
-    if (path.endsWith(".zip")) {
-      const unzipped = unzipSync(bytes);
-      const files = Object.keys(unzipped);
-      if (files.length !== 1) {
-        throw new Error(`压缩包中不止一个文件：${path}`);
-      }
-      bytes = unzipped[files[0]];
-    }
-
-    const crc = CRC32.buf(bytes);
-    return crc.toString(16).padStart(8, '0').toUpperCase();
-  }
+  // async getCRC(path: string): Promise<string> {
+  //   const buffer = await readFile(path);
+  //   let bytes = new Uint8Array(buffer.buffer);
+  //   if (path.endsWith(".zip")) {
+  //     const unzipped = unzipSync(bytes);
+  //     const files = Object.keys(unzipped);
+  //     if (files.length !== 1) {
+  //       throw new Error(`压缩包中不止一个文件：${path}`);
+  //     }
+  //     bytes = unzipped[files[0]];
+  //   }
+  //   const crc = CRC32.buf(bytes);
+  //   return crc.toString(16).padStart(8, '0').toUpperCase();
+  // }
 
   async loadCache(crc: string, baseDir: string) {
     const prefix = crc.substring(0, 2);
@@ -64,6 +66,10 @@ export class Scraper {
       return gameInfo;
     }
     return null;
+  }
+
+  async loadGameList() {
+
   }
 
   async saveCache(crc: string, baseDir: string, game: GameInfo) {
@@ -244,7 +250,7 @@ export class Scraper {
 
     const game = {
       path: `./${path}`,
-      id: info.id,
+      '@id': info.id,
       name,
       desc,
       image,
@@ -259,14 +265,18 @@ export class Scraper {
       md5: version.md5,
       lang,
       region,
-      scraps: [{
-        name: "ScreenScraper",
-        date: now.format('YYYYMMDDTHHmmss'),
+      scrap: [{
+        '@name': "ScreenScraper",
+        '@date': now.format('YYYYMMDDTHHmmss'),
       }],
     } satisfies GameListItem;
 
-    // console.info("生成游戏列表项如下：", game);
     return game;
+  }
+
+  async scrapeAll(dir: string, filter: (path: string) => boolean) {
+    const roms = await this.scanROMs(dir);
+
   }
 
   /**
