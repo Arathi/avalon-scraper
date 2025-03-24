@@ -1,0 +1,36 @@
+{
+  "name": "@avalon-scraper/emulationstation",
+  "version": "0.25.324-dev+25032415",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "crc-32": "^1.2.2",
+    "crypto-js": "^4.2.0",
+    "fast-xml-parser": "^5.0.9",
+    "fflate": "^0.8.2"
+  },
+  "devDependencies": {
+    "@rslib/core": "^0.5.5",
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^22.8.1",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
+  }
+}
